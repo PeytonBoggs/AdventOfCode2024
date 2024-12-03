@@ -5,8 +5,6 @@ safeCount = 0
 for line in f:
     report = line.split(" ")
 
-    print(report)
-
     increasing = True
     decreasing = True
     smallChange = True
@@ -24,7 +22,6 @@ for line in f:
 
     if (smallChange and (increasing or decreasing)):
         safeCount += 1
-        print("safe")
 
 print(safeCount)
 
