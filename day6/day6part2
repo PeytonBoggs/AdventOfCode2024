@@ -1,0 +1,118 @@
+f = open("day6/day6_input.txt", "r")
+
+map = []
+
+for line in f:
+    line = line.strip()
+    row = []
+    for char in line:
+        row.append([char, False, False, False, False, False])
+    map.append(row)
+
+guard_pos = [0, 0]
+
+i = 0
+while (i < len(map)):
+    j = 0
+    while (j < len(map[i])):
+        if (map[i][j][0] == "^"):
+            guard_pos = [i, j]
+        j += 1
+    i += 1
+
+map[guard_pos[0]][guard_pos[1]][0] = "X"
+map[guard_pos[0]][guard_pos[1]][1] = True
+num_positions = 1
+
+guard_dir = "up"
+in_bounds = True
+
+while (in_bounds):
+    #Move
+    if guard_dir == "up":
+        if (guard_pos[0] - 1 < 0):
+            in_bounds = False
+        elif (map[guard_pos[0] - 1][guard_pos[1]][0] == "#"):
+            guard_dir = "right"
+        elif (map[guard_pos[0] - 1][guard_pos[1]][0] == "X"):
+            guard_pos = [guard_pos[0] - 1, guard_pos[1]]
+        elif (map[guard_pos[0] - 1][guard_pos[1]][0] == "."):
+            guard_pos = [guard_pos[0] - 1, guard_pos[1]]
+            map[guard_pos[0]][guard_pos[1]][0] = "X"
+            map[guard_pos[0]][guard_pos[1]][1] = True
+            num_positions += 1
+    elif guard_dir == "right":
+        if (guard_pos[1] + 1 >= len(map[0])):
+            in_bounds = False
+        elif (map[guard_pos[0]][guard_pos[1] + 1][0] == "#"):
+            guard_dir = "down"
+        elif (map[guard_pos[0]][guard_pos[1] + 1][0] == "X"):
+            guard_pos = [guard_pos[0], guard_pos[1] + 1]
+        elif (map[guard_pos[0]][guard_pos[1] + 1][0] == "."):
+            guard_pos = [guard_pos[0], guard_pos[1] + 1]
+            map[guard_pos[0]][guard_pos[1]][0] = "X"
+            map[guard_pos[0]][guard_pos[1]][2] = True
+            num_positions += 1
+    elif guard_dir == "down":
+        if (guard_pos[0] + 1 >= len(map)):
+            in_bounds = False
+        elif (map[guard_pos[0] + 1][guard_pos[1]][0] == "#"):
+            guard_dir = "left"
+        elif (map[guard_pos[0] + 1][guard_pos[1]][0] == "X"):
+            guard_pos = [guard_pos[0] + 1, guard_pos[1]]
+        elif (map[guard_pos[0] + 1][guard_pos[1]][0] == "."):
+            guard_pos = [guard_pos[0] + 1, guard_pos[1]]
+            map[guard_pos[0]][guard_pos[1]][0] = "X"
+            map[guard_pos[0]][guard_pos[1]][3] = True
+            num_positions += 1
+    elif guard_dir == "left":
+        if (guard_pos[1] - 1 < 0):
+            in_bounds = False
+        elif (map[guard_pos[0]][guard_pos[1] - 1][0] == "#"):
+            guard_dir = "up"
+        elif (map[guard_pos[0]][guard_pos[1] - 1][0] == "X"):
+            guard_pos = [guard_pos[0], guard_pos[1] - 1]
+        elif (map[guard_pos[0]][guard_pos[1] - 1][0] == "."):
+            guard_pos = [guard_pos[0], guard_pos[1] - 1]
+            map[guard_pos[0]][guard_pos[1]][0] = "X"
+            map[guard_pos[0]][guard_pos[1]][4] = True
+            num_positions += 1
+
+    #Look for possible loop
+    if guard_dir == "up":
+        i = guard_pos[1]
+        while (i < len(map[0])):
+            if (guard_pos[0] - 1 >= 0 and map[guard_pos[0] - 1][guard_pos[1]][0] != "#" and map[guard_pos[0]][i][2]):
+                map[guard_pos[0] - 1][guard_pos[1]][5] = True
+            i += 1
+    elif guard_dir == "right":
+        i = guard_pos[0]
+        while (i < len(map)):
+            if (guard_pos[1] + 1 < len(map[0]) and map[guard_pos[0]][guard_pos[1] + 1][0] != "#" and map[i][guard_pos[1]][3]):
+                map[guard_pos[0]][guard_pos[1] + 1][5] = True
+            i += 1
+    elif guard_dir == "down":
+        i = guard_pos[1]
+        while (i >= 0):
+            if (guard_pos[0] + 1 < len(map) and map[guard_pos[0] + 1][guard_pos[1]][0] != "#" and map[guard_pos[0]][i][4]):
+                map[guard_pos[0] + 1][guard_pos[1]][5] = True
+            i -= 1
+    elif guard_dir == "left":
+        i = guard_pos[0]
+        while (i >= 0):
+            if (guard_pos[1] - 1 >= 0 and map[guard_pos[0]][guard_pos[1] - 1][0] != "#" and map[i][guard_pos[1]][1]):
+                map[guard_pos[0]][guard_pos[1] - 1][5] = True
+            i -= 1
+
+num_obsticles = 0
+
+i = 0
+while (i < len(map)):
+    j = 0
+    while (j < len(map[i])):
+        if (map[i][j][5]):
+            num_obsticles += 1
+        j += 1
+    i += 1
+
+print(num_obsticles)
